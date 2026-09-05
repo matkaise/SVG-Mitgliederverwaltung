@@ -8,7 +8,7 @@ Untersucht wurde die vom Benutzer bereitgestellte `GUT_<Zeitstempel>.zip`:
 - SQL-Server-Sicherung `spg_verein_GUT_<Zeitstempel>.bak`
 - SQL Server Major Version 12 (SQL Server 2014)
 - internes Datenbankformat 782
-- gefundene lokale Instanz `(LocalDb)\MSSQLLocalDB`, Datenbank `spg_verein_GUT`
+- gefundene lokale Instanz `(LocalDb)\MSSQLLocalDB-SPG`, Datenbank `spg_verein_GUT`
 - SPG-Datenversion 432
 - `restoreInfo.txt`
 - Ordner `mandanten/GUT/dta-historie`, `listen`, `bausteine`, `briefe`,

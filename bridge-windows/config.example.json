@@ -1,7 +1,7 @@
 {
   "ListenPrefix": "http://+:8787/",
   "Token": "BITTE_EIN_LANGES_ZUFAELLIGES_TOKEN_SETZEN",
-  "SqlInstance": "(LocalDb)\\MSSQLLocalDB",
+  "SqlInstance": "(LocalDb)\\MSSQLLocalDB-SPG",
   "Database": "spg_verein_GUT",
   "Mandant": "GUT",
   "EnableWrites": false,

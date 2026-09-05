@@ -2,7 +2,7 @@
 
 Die Brücke läuft auf dem Windows-Rechner und unter demselben Windows-Benutzer,
 unter dem SPG-VEREIN gestartet wird. Der gefundene Bestand verwendet
-`(LocalDb)\MSSQLLocalDB` und die Datenbank `spg_verein_GUT`. Nur diese
+`(LocalDb)\MSSQLLocalDB-SPG` und die Datenbank `spg_verein_GUT`. Nur diese
 SQL-Server-Generation kann eine `.bak`-Datei erzeugen, die vom vorhandenen SPG
 wieder eingelesen werden kann.
 
@@ -26,9 +26,9 @@ Einmalig:
 
 1. Auf Ubuntu `scripts/configure-spg-bridge.sh` ausführen. Das erzeugt die
    ignorierte `config.json` mit dem Token vom NAS.
-2. WinBoat bindet das Ubuntu-Home als Laufwerk `Z:` ein. Der vorbereitete Ordner
-   liegt deshalb unter
-   `Z:\Dokumente\ChatGPT\Mitgliederverwaltung\bridge-windows`.
+2. Der vorbereitete Ordner ist in WinBoat über die Freigabe
+   `\\host.lan\Data\Dokumente\ChatGPT\Mitgliederverwaltung\bridge-windows`
+   erreichbar. Ein Laufwerksbuchstabe ist nicht erforderlich.
 3. In Windows `Windows-Firewall-einmalig.ps1` einmal als Administrator
    ausführen. Die Regel gilt nur für TCP-Port 8787 aus dem lokalen
    WinBoat-Docker-Netz.

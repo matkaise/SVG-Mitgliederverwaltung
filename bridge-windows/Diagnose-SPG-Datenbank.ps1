@@ -71,14 +71,14 @@ if ($localDbCommand) {
   $localDbExecutable = $localDbCommand.Source
   & $localDbExecutable info
   Write-Host ''
-  & $localDbExecutable info MSSQLLocalDB
+  & $localDbExecutable info MSSQLLocalDB-SPG
 }
 else {
   Write-Host 'SqlLocalDB.exe wurde im PATH nicht gefunden.'
 }
 
-Write-Section 'Datenbanken in (LocalDb)\MSSQLLocalDB'
-$masterConnectionString = 'Server=(LocalDb)\MSSQLLocalDB;Database=master;Integrated Security=True;Application Name=GUT-SPG-Diagnose;Connect Timeout=10;'
+Write-Section 'Datenbanken in (LocalDb)\MSSQLLocalDB-SPG'
+$masterConnectionString = 'Server=(LocalDb)\MSSQLLocalDB-SPG;Database=master;Integrated Security=True;Application Name=GUT-SPG-Diagnose;Connect Timeout=10;'
 $masterConnection = [System.Data.SqlClient.SqlConnection]::new($masterConnectionString)
 try {
   $masterConnection.Open()
@@ -113,7 +113,7 @@ finally {
 }
 
 Write-Section 'Direkter Test von spg_verein_GUT'
-$targetConnectionString = 'Server=(LocalDb)\MSSQLLocalDB;Database=spg_verein_GUT;Integrated Security=True;Application Name=GUT-SPG-Diagnose;Connect Timeout=10;'
+$targetConnectionString = 'Server=(LocalDb)\MSSQLLocalDB-SPG;Database=spg_verein_GUT;Integrated Security=True;Application Name=GUT-SPG-Diagnose;Connect Timeout=10;'
 $targetConnection = [System.Data.SqlClient.SqlConnection]::new($targetConnectionString)
 try {
   $targetConnection.Open()
