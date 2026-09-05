@@ -21,7 +21,7 @@ New-NetFirewallRule `
     -Action Allow `
     -Protocol TCP `
     -LocalPort 8787 `
-    -RemoteAddress 172.30.0.1 `
+    -RemoteAddress 172.18.0.0/16 `
     -Profile Any | Out-Null
 
-Write-Host 'Firewall-Regel fuer den WinBoat-NAT-Gateway 172.30.0.1 angelegt.'
+Write-Host 'Firewall-Regel fuer das lokale WinBoat-Docker-Netz angelegt.'

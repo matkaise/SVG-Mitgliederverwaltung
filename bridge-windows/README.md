@@ -26,9 +26,13 @@ Einmalig:
 
 1. Auf Ubuntu `scripts/configure-spg-bridge.sh` ausführen. Das erzeugt die
    ignorierte `config.json` mit dem Token vom NAS.
-2. In Windows `Windows-Firewall-einmalig.ps1` einmal als Administrator
-   ausführen. Die Regel akzeptiert nur den WinBoat-NAT-Gateway.
-3. Auf Ubuntu `scripts/spg-transfer.sh prepare` ausführen. Das baut nur das
+2. WinBoat bindet das Ubuntu-Home als Laufwerk `Z:` ein. Der vorbereitete Ordner
+   liegt deshalb unter
+   `Z:\Dokumente\ChatGPT\Mitgliederverwaltung\bridge-windows`.
+3. In Windows `Windows-Firewall-einmalig.ps1` einmal als Administrator
+   ausführen. Die Regel gilt nur für TCP-Port 8787 aus dem lokalen
+   WinBoat-Docker-Netz.
+4. Auf Ubuntu `scripts/spg-transfer.sh prepare` ausführen. Das baut nur das
    kleine lokale Forwarder-Image und startet noch keine Verbindung.
 
 Für jede Übertragung:
