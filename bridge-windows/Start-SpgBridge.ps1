@@ -1,9 +1,13 @@
 param(
   [Parameter(Mandatory = $false)]
-  [string]$ConfigPath = "$PSScriptRoot\config.json"
+  [string]$ConfigPath
 )
 
 $ErrorActionPreference = "Stop"
+$scriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
+if ([string]::IsNullOrWhiteSpace($ConfigPath)) {
+  $ConfigPath = Join-Path -Path $scriptDirectory -ChildPath 'config.json'
+}
 $config = Get-Content -LiteralPath $ConfigPath -Raw -Encoding UTF8 | ConvertFrom-Json
 
 if ([string]::IsNullOrWhiteSpace($config.Token) -or $config.Token.Length -lt 24) {
