@@ -273,8 +273,8 @@ async function importSpgMembers(response) {
       const memberNumber = text(raw.memberNumber, 20);
       const firstName = text(raw.firstName, 35) || '';
       const lastName = text(raw.lastName, 35) || '';
-      const entryDate = date(raw.entryDate);
-      if (!memberNumber || !entryDate) { skipped += 1; continue; }
+      const entryDate = raw.entryDate ? date(raw.entryDate) : '';
+      if (!memberNumber || (raw.entryDate && !entryDate)) { skipped += 1; continue; }
       const input = { ...raw, firstName, lastName, entryDate, annualFeeCents: integer(raw.annualFeeCents, 0, 10_000_000) ?? 0 };
       const existing = findExisting.get(memberNumber);
       if (existing && !existing.spgSyncedAt) { skipped += 1; continue; }
