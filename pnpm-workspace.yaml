@@ -1,0 +1,26 @@
+packages:
+  - .
+
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - react
+  - react-dom
+  - '@types/react'
+  - '@types/react-dom'
+  - lucide-react
+  - '@base-ui/react'
+  - '@shadcn/react'
+  - vite
+  - '@vitejs/plugin-react'
+  - typescript
+  - oxlint
+  - '@types/node'
+  - tailwindcss
+  - '@tailwindcss/postcss'
+  - tailwind-merge
+  - class-variance-authority
+  - clsx
+
+allowBuilds:
+  esbuild: true

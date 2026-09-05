@@ -1,0 +1,11 @@
+node_modules
+dist/
+.env
+.env.local
+data/*
+!data/.gitkeep
+*.log
+.DS_Store
+Thumbs.db
+work/
+bridge-windows/config.json

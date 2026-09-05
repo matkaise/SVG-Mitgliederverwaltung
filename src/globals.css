@@ -1,0 +1,88 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --canvas: #f3f6f5;
+  --ink: #152b3a;
+  --muted-ink: #64747d;
+  --navy: #142b3a;
+  --teal: #0b9f91;
+  --teal-dark: #087f75;
+  --mint: #85e5d4;
+  --sky: #e5f3f1;
+  --background: #ffffff;
+  --foreground: #152b3a;
+  --card: #ffffff;
+  --card-foreground: #152b3a;
+  --popover: #ffffff;
+  --popover-foreground: #152b3a;
+  --primary: #0b9f91;
+  --primary-foreground: #ffffff;
+  --secondary: #e5f3f1;
+  --secondary-foreground: #152b3a;
+  --muted: #edf2f1;
+  --muted-foreground: #64747d;
+  --accent: #e5f3f1;
+  --accent-foreground: #152b3a;
+  --destructive: #c93e3e;
+  --border: #dce4e3;
+  --input: #dce4e3;
+  --ring: #0b9f91;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #142b3a;
+  --foreground: #f6faf9;
+  --card: #193646;
+  --card-foreground: #f6faf9;
+  --popover: #193646;
+  --popover-foreground: #f6faf9;
+  --primary: #85e5d4;
+  --primary-foreground: #142b3a;
+  --secondary: #244656;
+  --secondary-foreground: #f6faf9;
+  --muted: #244656;
+  --muted-foreground: #b8c8cc;
+  --accent: #244656;
+  --accent-foreground: #f6faf9;
+  --destructive: #ff7777;
+  --border: #315463;
+  --input: #315463;
+  --ring: #85e5d4;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, monospace;
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; }
+  html { @apply font-sans; }
+  h1 { @apply text-3xl font-semibold tracking-tight md:text-4xl; }
+}
