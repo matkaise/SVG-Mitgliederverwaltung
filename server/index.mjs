@@ -122,7 +122,7 @@ const server = createServer(async (request, response) => {
     if (url.pathname === '/api/settings' && request.method === 'PUT') return putSettings(request, response);
     if (url.pathname === '/api/export/sepa' && request.method === 'POST') return exportSepa(request, response);
     if (url.pathname === '/api/spg/status' && request.method === 'GET') return spgStatus(response);
-    if (url.pathname === '/api/spg/import' && request.method === 'POST') return importSpgMembers(response);
+    if (url.pathname === '/api/spg/import' && request.method === 'POST') return await importSpgMembers(response);
     if (url.pathname === '/api/export/spg-backup' && request.method === 'POST') return exportSpgBackup(response);
     if (url.pathname.startsWith('/api/')) return json(response, 404, { error: 'Nicht gefunden.' });
     return staticFile(url.pathname, response);
@@ -180,18 +180,19 @@ async function updateMember(id, request, response) {
 }
 
 function memberRecord(body, meta) {
+  const preserveEmpty = Boolean(meta.preserveEmpty);
   const record = Object.fromEntries(memberFields.map(([api, column, max]) => [column, text(body[api], max)]));
   Object.assign(record, {
     id: meta.id, member_number: meta.memberNumber,
-    first_name: text(body.firstName, 35), last_name: text(body.lastName, 35),
-    entry_date: date(body.entryDate), country: text(body.country, 5) || 'DE',
-    department: text(body.department, 50) || 'Fussball',
-    department_entry_date: date(body.departmentEntryDate) || date(body.entryDate),
-    contribution_type: text(body.contributionType, 70) || 'Erwachsene aktive Mitglieder',
+    first_name: text(body.firstName, 35) || '', last_name: text(body.lastName, 35) || '',
+    entry_date: date(body.entryDate) || '', country: text(body.country, 5) || (preserveEmpty ? '' : 'DE'),
+    department: text(body.department, 50) || (preserveEmpty ? '' : 'Fussball'),
+    department_entry_date: date(body.departmentEntryDate) || (preserveEmpty ? null : date(body.entryDate)),
+    contribution_type: text(body.contributionType, 70) || (preserveEmpty ? '' : 'Erwachsene aktive Mitglieder'),
     annual_fee_cents: meta.annualFeeCents,
-    payment_frequency: text(body.paymentFrequency, 1) || 'j',
-    payment_method: text(body.paymentMethod, 1) || 's',
-    sepa_sequence: text(body.sepaSequence, 4) || 'RCUR',
+    payment_frequency: text(body.paymentFrequency, 1) || (preserveEmpty ? '' : 'j'),
+    payment_method: text(body.paymentMethod, 1) || (preserveEmpty ? '' : 's'),
+    sepa_sequence: text(body.sepaSequence, 4) || (preserveEmpty ? '' : 'RCUR'),
     custom_fields: typeof body.customFields === 'string' ? body.customFields : '{}',
     image_consent: body.imageConsent ? 1 : 0, email_consent: body.emailConsent ? 1 : 0,
     created_at: meta.now, updated_at: meta.now,
@@ -266,6 +267,11 @@ async function importSpgMembers(response) {
   if (!Array.isArray(payload.members)) return json(response, 502, { error: 'Die SPG-Brücke hat keinen gültigen Mitgliederbestand geliefert.' });
   const findExisting = db.prepare('SELECT id, spg_synced_at AS spgSyncedAt FROM members WHERE member_number = ?');
   const now = new Date().toISOString();
+  const requiredImportDefaults = {
+    first_name: '', last_name: '', entry_date: '', country: '', department: '',
+    contribution_type: '', payment_frequency: '', payment_method: '',
+    sepa_sequence: '', custom_fields: '{}',
+  };
   let imported = 0; let updated = 0; let skipped = 0;
   db.exec('BEGIN IMMEDIATE');
   try {
@@ -279,12 +285,15 @@ async function importSpgMembers(response) {
       const existing = findExisting.get(memberNumber);
       if (existing && !existing.spgSyncedAt) { skipped += 1; continue; }
       if (!existing) {
-        const record = memberRecord(input, { id: `spg:${memberNumber}`, memberNumber, annualFeeCents: input.annualFeeCents, now });
+        const record = memberRecord(input, { id: `spg:${memberNumber}`, memberNumber, annualFeeCents: input.annualFeeCents, now, preserveEmpty: true });
         record.columns.push('spg_synced_at'); record.values.push(now);
         db.prepare(`INSERT INTO members (${record.columns.join(', ')}) VALUES (${record.columns.map(() => '?').join(', ')})`).run(...record.values);
         imported += 1;
       } else {
-        const pairs = memberFields.map(([api, column, max]) => [column, text(input[api], max)]);
+        const pairs = memberFields.map(([api, column, max]) => {
+          const value = text(input[api], max);
+          return [column, value ?? requiredImportDefaults[column] ?? null];
+        });
         pairs.push(['annual_fee_cents', input.annualFeeCents]);
         pairs.push(['image_consent', input.imageConsent ? 1 : 0]);
         pairs.push(['email_consent', input.emailConsent ? 1 : 0]);
