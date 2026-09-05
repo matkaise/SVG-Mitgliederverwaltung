@@ -13,6 +13,7 @@ den Rückweg in SPG-VEREIN.
 - kennwortgeschützter Zugriff über HTTP Basic Auth
 - strenge SPG-Kompatibilitätsprüfung gegen SQL Server 2014 / Datenbankformat 782
 - Windows-Brücke zur Erzeugung der echten SPG-ZIP-Struktur
+- manuell startbarer WinBoat-Forwarder ohne Hintergrund-Synchronisation
 - Einlesen des vorhandenen SPG-Mitgliederbestands über die geprüfte Brücke
 - Rückschreiben über die originalen SPG-Prozeduren, standardmäßig bis zum
   Roundtrip-Test gesperrt
@@ -61,6 +62,10 @@ Deshalb läuft der zweite Teil aus `bridge-windows/` auf dem SPG-Windows-Rechner
 mit der originalen SQL-Server-Version.
 
 Details und Abnahmekriterien: [docs/SPG-KOMPATIBILITAET.md](docs/SPG-KOMPATIBILITAET.md)
+
+Bei WinBoat wird die Verbindung nur für den einzelnen Import oder Export
+gestartet. Die Befehle stehen in
+[bridge-windows/README.md](bridge-windows/README.md).
 
 ## Datenschutz
 

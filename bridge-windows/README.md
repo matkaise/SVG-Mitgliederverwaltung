@@ -17,13 +17,27 @@ freigegeben, wenn der Roundtrip-Test mit einer isolierten SPG-Kopie alle
 Ehrungen bestanden hat. Bis dahin erzeugt die Brücke nur Sicherungen des bereits
 in SPG vorhandenen Bestands.
 
-## Lokaler Teststart
+## Manueller Start mit WinBoat
 
-1. `config.example.json` nach `config.json` kopieren und Werte anpassen.
-2. Ein langes zufälliges Token setzen und Port 8787 nur für die NAS-IP in der
-   Windows-Firewall freigeben.
-3. PowerShell unter demselben Windows-Benutzer wie SPG starten:
-   `powershell.exe -ExecutionPolicy Bypass -File .\Start-SpgBridge.ps1`
+Es gibt ausdrücklich keinen Hintergrund-Sync. Die Brücke und der Ubuntu-
+Forwarder laufen nur während einer manuell gestarteten Übertragung.
+
+Einmalig:
+
+1. Auf Ubuntu `scripts/configure-spg-bridge.sh` ausführen. Das erzeugt die
+   ignorierte `config.json` mit dem Token vom NAS.
+2. In Windows `Windows-Firewall-einmalig.ps1` einmal als Administrator
+   ausführen. Die Regel akzeptiert nur den WinBoat-NAT-Gateway.
+3. Auf Ubuntu `scripts/spg-transfer.sh prepare` ausführen. Das baut nur das
+   kleine lokale Forwarder-Image und startet noch keine Verbindung.
+
+Für jede Übertragung:
+
+1. In Windows `Start-SPG-Uebertragung.cmd` starten.
+2. Auf Ubuntu `scripts/spg-transfer.sh start` ausführen.
+3. In der Webapp den Bestand einlesen oder eine SPG-Sicherung erstellen.
+4. Auf Ubuntu `scripts/spg-transfer.sh stop` ausführen.
+5. Das Windows-Fenster der SPG-Brücke mit `Strg+C` schließen.
 
 `EnableWrites` bleibt bis zum bestandenen Abnahmetest auf `false`. Das Lesen und
 das Sichern des bestehenden SPG-Bestands funktionieren unabhängig davon.

@@ -24,17 +24,20 @@ Ein CSV-Export ist daher kein vollständiger Ersatz für eine SPG-Sicherung.
 Browser
    │
    ▼
-NAS: Docker-Webapp ─── HTTPS/Token ───► Windows-SPG-Brücke
-   │                                      │
-   ▼                                      ▼
-SQLite-Arbeitsbestand                 SQL Server 2014
-                                          │
-                                          ▼
-                            .bak + restoreInfo + Dateien
-                                          │
-                                          ▼
-                                   GUT_<Zeit>.zip
+NAS: Docker-Webapp ─── Token ───► Ubuntu-Forwarder ───► WinBoat/Windows-SPG-Brücke
+   │                       nur bei manueller Übertragung              │
+   ▼                                                                  ▼
+SQLite-Arbeitsbestand                                             SQL Server 2014
+                                                                      │
+                                                                      ▼
+                                                        .bak + restoreInfo + Dateien
+                                                                      │
+                                                                      ▼
+                                                               GUT_<Zeit>.zip
 ```
+
+Es gibt keinen dauerhaften Sync. Der Forwarder und die Windows-Brücke werden
+nur für eine bewusst ausgelöste Übertragung gestartet und danach beendet.
 
 Die Brücke gibt eine Sicherung nur frei, wenn alle harten Merkmale passen:
 
