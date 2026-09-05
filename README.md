@@ -11,7 +11,7 @@ den Rückweg in SPG-VEREIN.
 - persistente lokale SQLite-Datenbank im Docker-Volume
 - SEPA-Export als `pain.008.001.08` sowie Legacy-Format
 - kennwortgeschützter Zugriff über HTTP Basic Auth
-- strenge SPG-Kompatibilitätsprüfung gegen SQL Server 2014 / Datenbankformat 782
+- strenge SPG-Kompatibilitätsprüfung gegen die konfigurierte Live-SPG-Version
 - Windows-Brücke zur Erzeugung der echten SPG-ZIP-Struktur
 - manuell startbarer WinBoat-Forwarder ohne Hintergrund-Synchronisation
 - Einlesen des vorhandenen SPG-Mitgliederbestands über die geprüfte Brücke

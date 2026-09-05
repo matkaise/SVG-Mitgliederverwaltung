@@ -238,7 +238,10 @@ async function bridgeStatus() {
     const result = await fetch(`${base}/api/health`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(5000) });
     if (!result.ok) return { connected: false, compatible: false, reason: `Brücke antwortet mit HTTP ${result.status}.` };
     const data = await result.json();
-    const compatible = data.sqlServerMajor === 12 && data.databaseVersion === 782 && data.mandant === 'GUT';
+    const compatible = data.compatible === true
+      && data.sqlServerMajor === data.expectedSqlServerMajor
+      && data.databaseVersion === data.expectedDatabaseVersion
+      && data.mandant === 'GUT';
     return { ...data, connected: true, compatible, writeCompatible: Boolean(compatible && data.writeCompatible), reason: compatible ? null : 'SQL-Server-Version, Datenbankformat oder Mandant stimmen nicht mit der geprüften SPG-Sicherung überein.' };
   } catch {
     return { connected: false, compatible: false, reason: 'Die Windows-SPG-Brücke ist nicht erreichbar.' };
@@ -327,7 +330,7 @@ async function exportSpgBackup(response) {
       db.exec('COMMIT');
     } catch (error) { db.exec('ROLLBACK'); throw error; }
   }
-  const result = await fetch(`${bridge}/api/backups`, { method: 'POST', headers: { Authorization: `Bearer ${process.env.SPG_BRIDGE_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ mandant: 'GUT', expectedSqlServerMajor: 12, expectedDatabaseVersion: 782 }) });
+  const result = await fetch(`${bridge}/api/backups`, { method: 'POST', headers: { Authorization: `Bearer ${process.env.SPG_BRIDGE_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ mandant: 'GUT', expectedSqlServerMajor: status.expectedSqlServerMajor, expectedDatabaseVersion: status.expectedDatabaseVersion }) });
   if (!result.ok) return json(response, 502, { error: 'Die SPG-Brücke konnte keine geprüfte Sicherung erstellen.' });
   response.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Disposition': result.headers.get('content-disposition') || `attachment; filename="GUT_${timestampCompact()}.zip"` });
   const buffer = Buffer.from(await result.arrayBuffer());

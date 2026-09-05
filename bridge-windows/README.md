@@ -2,9 +2,9 @@
 
 Die Brücke läuft auf dem Windows-Rechner und unter demselben Windows-Benutzer,
 unter dem SPG-VEREIN gestartet wird. Der gefundene Bestand verwendet
-`(LocalDb)\MSSQLLocalDB-SPG` und die Datenbank `spg_verein_GUT`. Nur diese
-SQL-Server-Generation kann eine `.bak`-Datei erzeugen, die vom vorhandenen SPG
-wieder eingelesen werden kann.
+`(LocalDb)\MSSQLLocalDB-SPG` und die Datenbank `spg_verein_GUT`. Die Brücke
+prüft die konfigurierte Live-Version, bevor sie Daten liest oder eine
+`.bak`-Datei erzeugt.
 
 ## Noch nicht produktiv freigeben
 

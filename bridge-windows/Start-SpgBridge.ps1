@@ -19,6 +19,12 @@ if ($config.Mandant -notmatch '^[A-Z0-9_-]{1,10}$') {
 if ($config.Database -notmatch '^[A-Za-z0-9_]{1,80}$') {
   throw "Ungueltiger Datenbankname."
 }
+$expectedSqlServerMajor = [int]$config.ExpectedSqlServerMajor
+$expectedDatabaseVersion = [int]$config.ExpectedDatabaseVersion
+$spgDataVersion = [int]$config.SpgDataVersion
+if ($expectedSqlServerMajor -lt 1 -or $expectedDatabaseVersion -lt 1 -or $spgDataVersion -lt 1) {
+  throw "SQL-Server-, Datenbank- und SPG-Datenversion muessen in config.json festgelegt sein."
+}
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $connectionString = "Server=$($config.SqlInstance);Database=$($config.Database);Integrated Security=True;Application Name=GUT-SPG-Bridge;"
@@ -51,13 +57,20 @@ SELECT
 "@
     $reader = $command.ExecuteReader()
     [void]$reader.Read()
-    $compatible = ([int]$reader['SqlServerMajor'] -eq 12 -and [int]$reader['DatabaseVersion'] -eq 782 -and [int]$reader['HasMemberTable'] -eq 1)
+    $compatible = (
+      [int]$reader['SqlServerMajor'] -eq $expectedSqlServerMajor -and
+      [int]$reader['DatabaseVersion'] -eq $expectedDatabaseVersion -and
+      [int]$reader['HasMemberTable'] -eq 1
+    )
     return @{
       connected = $true
       compatible = $compatible
       writeCompatible = ($compatible -and [int]$reader['HasWriteProcedures'] -eq 1 -and [bool]$config.EnableWrites)
       sqlServerMajor = [int]$reader['SqlServerMajor']
       databaseVersion = [int]$reader['DatabaseVersion']
+      expectedSqlServerMajor = $expectedSqlServerMajor
+      expectedDatabaseVersion = $expectedDatabaseVersion
+      spgDataVersion = $spgDataVersion
       mandant = [string]$config.Mandant
       database = [string]$config.Database
     }
@@ -376,7 +389,7 @@ function Copy-SpgFiles([string]$destination) {
 function New-SpgBackup {
   $compatibility = Get-Compatibility
   if (-not $compatibility.compatible) {
-    throw "Kompatibilitaetspruefung fehlgeschlagen: SQL Server 12 und Datenbankformat 782 sind erforderlich."
+    throw "Kompatibilitaetspruefung fehlgeschlagen: SQL Server $expectedSqlServerMajor und Datenbankformat $expectedDatabaseVersion sind erforderlich."
   }
   $now = Get-Date
   $stamp = $now.ToString('yyyyMMdd_HHmmss')
@@ -408,8 +421,8 @@ function New-SpgBackup {
       "EtikettenSichern:True",
       "FormulareSichern:True",
       "BestandDBname:$bakName",
-      "Serverversion:12",
-      "Datenversion:432"
+      "Serverversion:$expectedSqlServerMajor",
+      "Datenversion:$spgDataVersion"
     ) -join "`r`n"
     $utf8WithoutBom = [System.Text.UTF8Encoding]::new($false)
     [System.IO.File]::WriteAllText((Join-Path $payload 'restoreInfo.txt'), "$restoreInfo`r`n", $utf8WithoutBom)

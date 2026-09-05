@@ -18,6 +18,11 @@ Die Sicherung enthält 138 Tabellen. Die zentrale Tabelle `tbl_Mitglied` besitzt
 114 Spalten; Beiträge, Funktionen und Ehrungen liegen in eigenen Untertabellen.
 Ein CSV-Export ist daher kein vollständiger Ersatz für eine SPG-Sicherung.
 
+Die aktuell geöffnete SPG-Installation hat diesen Bestand beim Wiederherstellen
+auf SQL Server Major Version 16 und Datenbankformat 957 aktualisiert. Für den
+Datenaustausch mit genau dieser Installation sind deshalb `16 / 957` die
+verbindlichen Live-Werte; `12 / 782` beschreiben nur das alte Eingangs-ZIP.
+
 ## Architektur
 
 ```text
@@ -41,8 +46,8 @@ nur für eine bewusst ausgelöste Übertragung gestartet und danach beendet.
 
 Die Brücke gibt eine Sicherung nur frei, wenn alle harten Merkmale passen:
 
-1. SQL Server Major Version ist 12.
-2. Datenbankformat ist 782.
+1. SQL Server Major Version entspricht dem konfigurierten Live-Wert 16.
+2. Datenbankformat entspricht dem konfigurierten Live-Wert 957.
 3. Mandant ist `GUT`.
 4. `tbl_Mitglied` ist vorhanden.
 5. Alle benötigten SPG-Dateiverzeichnisse sind vorhanden.
