@@ -149,15 +149,35 @@ async function createMember(request, response) {
   if (annualFeeCents === null) return json(response, 400, { error: 'Der Beitrag ist ungültig.' });
   const now = new Date().toISOString();
   const id = crypto.randomUUID();
-  const memberNumber = text(body.memberNumber, 20) || `W${Date.now().toString(36).toUpperCase().slice(-9)}`;
-  const values = memberRecord(body, { id, memberNumber, annualFeeCents, now });
   try {
+    db.exec('BEGIN IMMEDIATE');
+    const memberNumber = nextMemberNumber();
+    const values = memberRecord(body, { id, memberNumber, annualFeeCents, now });
     db.prepare(`INSERT INTO members (${values.columns.join(', ')}) VALUES (${values.columns.map(() => '?').join(', ')})`).run(...values.values);
+    const member = normalizeMember(db.prepare(`SELECT ${columns} FROM members WHERE id = ?`).get(id));
+    db.exec('COMMIT');
+    return json(response, 201, { member });
   } catch (error) {
+    try { db.exec('ROLLBACK'); } catch { /* Keine offene Transaktion. */ }
     return json(response, 400, { error: String(error).includes('UNIQUE') ? 'Diese Mitgliedsnummer ist bereits vergeben.' : 'Das Mitglied konnte nicht gespeichert werden.' });
   }
-  const member = normalizeMember(db.prepare(`SELECT ${columns} FROM members WHERE id = ?`).get(id));
-  return json(response, 201, { member });
+}
+
+function nextMemberNumber() {
+  let highest = 0n;
+  let width = 1;
+  for (const row of db.prepare('SELECT member_number AS memberNumber FROM members').all()) {
+    if (!/^\d+$/.test(row.memberNumber)) continue;
+    const value = BigInt(row.memberNumber);
+    if (value > highest) {
+      highest = value;
+      width = row.memberNumber.length;
+    } else if (value === highest) {
+      width = Math.max(width, row.memberNumber.length);
+    }
+  }
+  const next = String(highest + 1n);
+  return next.padStart(Math.max(width, next.length), '0');
 }
 
 async function updateMember(id, request, response) {

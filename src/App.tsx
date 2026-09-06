@@ -298,9 +298,10 @@ function MembersView({ members, loading, query, onSave }: { members: Member[]; l
         <p className="mx-auto mt-2 max-w-md text-pretty text-[13.5px] text-[var(--muted-ink)]">{members.length ? 'Passe Suche oder Filter an.' : 'Lege den ersten Datensatz an oder lies den SPG-Bestand über die Windows-Brücke ein.'}</p>
       </div> : <>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[480px] table-fixed border-collapse">
+          <table className="w-full min-w-[610px] table-fixed border-collapse">
             <thead><tr className="bg-[var(--surface)]">
               <th className="px-3.5 py-[9px] text-left text-[11px] font-semibold tracking-[0.04em] text-[var(--muted-ink)]">Mitglied</th>
+              <th className="w-[118px] px-2 py-[9px] text-left text-[11px] font-semibold tracking-[0.04em] text-[var(--muted-ink)]">Mitgliedsnummer</th>
               <th className="w-[86px] px-2 py-[9px] text-left text-[11px] font-semibold tracking-[0.04em] text-[var(--muted-ink)]">Abteilung</th>
               <th className="w-[78px] px-2 py-[9px] text-left text-[11px] font-semibold tracking-[0.04em] text-[var(--muted-ink)]">Eintritt</th>
               <th className="w-[86px] px-2 py-[9px] text-right text-[11px] font-semibold tracking-[0.04em] text-[var(--muted-ink)]">Beitrag</th>
@@ -313,12 +314,10 @@ function MembersView({ members, loading, query, onSave }: { members: Member[]; l
                 <td className="overflow-hidden px-3.5 py-[9px]">
                   <MemberDialog member={member} onSave={onSave} trigger={<button className="flex w-full min-w-0 items-center gap-2.5 text-left">
                     <span className="grid size-[30px] flex-none place-items-center rounded-full text-[11px] font-semibold" style={{ background: state === 'Prüfen' ? 'var(--red-soft)' : 'var(--line-dim)', color: state === 'Prüfen' ? 'var(--red)' : 'var(--ink-2)' }}>{initials(member)}</span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-[13.5px] font-medium">{member.firstName} {member.lastName}</span>
-                      <span className="mt-px block truncate font-mono text-[11.5px] text-[var(--muted-ink)]">{member.memberNumber}</span>
-                    </span>
+                    <span className="min-w-0 truncate text-[13.5px] font-medium">{member.firstName} {member.lastName}</span>
                   </button>} />
                 </td>
+                <td className="whitespace-nowrap px-2 py-[9px] font-mono text-[12.5px] tabular-nums text-[var(--ink-2)]">{member.memberNumber}</td>
                 <td className="truncate px-2 py-[9px] text-[13px] text-[var(--ink-2)]">{member.department || '–'}</td>
                 <td className="whitespace-nowrap px-2 py-[9px] text-[12.5px] tabular-nums text-[var(--ink-2)]">{dateDe(member.entryDate)}</td>
                 <td className="whitespace-nowrap px-2 py-[9px] text-right text-[13px] font-medium tabular-nums">{euro(member.annualFeeCents)}</td>
@@ -605,7 +604,8 @@ const labelClass = 'block text-[11.5px] font-medium text-[var(--muted-ink)]';
 
 function EditorTab({ value, children }: { value: string; children: React.ReactNode }) { return <TabsContent value={value}><div className="grid min-h-[340px] grid-cols-[repeat(auto-fit,minmax(215px,1fr))] gap-x-[18px] gap-y-3.5 content-start">{children}</div></TabsContent>; }
 function Field({ label, name, type = 'text', required = false, wide = false, ...props }: { label: string; name: string; type?: string; required?: boolean; wide?: boolean; [key: string]: unknown }) {
-  return <div className={wide ? 'sm:col-span-2' : ''}><Label htmlFor={name} className={labelClass}>{label}</Label><Input id={name} name={name} type={type} required={required} className={fieldClass} placeholder="Noch nicht erfasst" {...props} /></div>;
+  const automaticMemberNumber = name === 'memberNumber';
+  return <div className={wide ? 'sm:col-span-2' : ''}><Label htmlFor={name} className={labelClass}>{label}</Label><Input id={name} name={name} type={type} required={required} className={fieldClass} placeholder={automaticMemberNumber ? 'Wird automatisch vergeben' : 'Noch nicht erfasst'} {...props} readOnly={automaticMemberNumber} /></div>;
 }
 function SelectField({ label, name, options, defaultValue }: { label: string; name: string; options: string[][]; defaultValue?: string }) {
   return <div><Label htmlFor={name} className={labelClass}>{label}</Label><NativeSelect id={name} name={name} defaultValue={defaultValue} className={fieldClass}>{options.map(([value, title]) => <NativeSelectOption key={value} value={value}>{title}</NativeSelectOption>)}</NativeSelect></div>;
