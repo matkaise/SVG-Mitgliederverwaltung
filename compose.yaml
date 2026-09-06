@@ -1,7 +1,7 @@
 services:
   vereinsverwaltung:
     build: .
-    image: gut-mitgliederverwaltung:local
+    image: ghcr.io/matkaise/svg-mitgliederverwaltung:latest
     restart: unless-stopped
     env_file:
       - .env
